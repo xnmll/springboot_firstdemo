@@ -2,6 +2,8 @@ package cn.xnmll.demo_2020.service;
 
 import cn.xnmll.demo_2020.dto.PaginationDTO;
 import cn.xnmll.demo_2020.dto.QuestionDTO;
+import cn.xnmll.demo_2020.exception.CustomizeErrorCode;
+import cn.xnmll.demo_2020.exception.CustomizeException;
 import cn.xnmll.demo_2020.mapper.QuestionMapper;
 import cn.xnmll.demo_2020.mapper.UserMapper;
 import cn.xnmll.demo_2020.model.Question;
@@ -125,6 +127,7 @@ public class QuestionService {
 
     public QuestionDTO getById(Integer id) {
         Question question = questionMapper.selectByPrimaryKey(id);
+        if(question == null) throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);
         User user = userMapper.selectByPrimaryKey(question.getCreator());
@@ -147,7 +150,10 @@ public class QuestionService {
             updatequestion.setDescription(question.getDescription());
             QuestionExample questionExample = new QuestionExample();
             questionExample.createCriteria().andIdEqualTo(question.getId());
-            questionMapper.updateByExampleSelective(updatequestion,questionExample);
+            int updated = questionMapper.updateByExampleSelective(updatequestion,questionExample);
+            if (updated != 1){
+                throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
+            }
         }
     }
 }
