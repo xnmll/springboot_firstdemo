@@ -4,6 +4,7 @@ import cn.xnmll.demo_2020.dto.PaginationDTO;
 import cn.xnmll.demo_2020.dto.QuestionDTO;
 import cn.xnmll.demo_2020.exception.CustomizeErrorCode;
 import cn.xnmll.demo_2020.exception.CustomizeException;
+import cn.xnmll.demo_2020.mapper.QuestionExtMapper;
 import cn.xnmll.demo_2020.mapper.QuestionMapper;
 import cn.xnmll.demo_2020.mapper.UserMapper;
 import cn.xnmll.demo_2020.model.Question;
@@ -26,6 +27,10 @@ public class QuestionService {
 
     @Autowired
     private QuestionMapper questionMapper;
+
+    @Autowired
+    private QuestionExtMapper questionExtMapper;
+
 
     @Autowired
     private UserMapper userMapper;
@@ -155,5 +160,12 @@ public class QuestionService {
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
         }
+    }
+
+    public void incView(Integer id) {
+        Question question = new Question();
+        question.setId(id);
+        question.setViewCount(1);
+        questionExtMapper.incView(question);
     }
 }
